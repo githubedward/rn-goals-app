@@ -1,40 +1,35 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  Button,
+  FlatList
+} from "react-native";
+import Item from "./components/Item";
+import GoalInput from "./components/GoalInput";
 
 export default function App() {
   const [goals, setGoals] = useState([]);
-  const [inputGoal, setInputGoal] = useState("");
 
-  const listOfGoals =
-    !!goals.length &&
-    goals.map((goal, i) => (
-      <View style={styles.listItem} key={i}>
-        <Text>{goal}</Text>
-      </View>
-    ));
+  const addGoalItem = title => {
+    if (!!title) {
+      setGoals(currentGoals => [
+        ...currentGoals,
+        { key: Math.random().toString(), value: title }
+      ]);
+    }
+  };
 
   return (
     <View style={styles.screen}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Course Goal"
-          style={styles.input}
-          onChangeText={text => {
-            setInputGoal(text);
-          }}
-          value={inputGoal}
-        />
-        <Button
-          title="Add"
-          onPress={() => {
-            if (!!inputGoal) {
-              setGoals(currentGoals => [...currentGoals, inputGoal]);
-              setInputGoal("");
-            }
-          }}
-        />
-      </View>
-      <View>{listOfGoals}</View>
+      <GoalInput onAddGoal={addGoalItem} />
+      <FlatList
+        data={goals}
+        keyExtractor={item => item.key}
+        renderItem={data => <Item title={data.item.value} />}
+      ></FlatList>
     </View>
   );
 }
@@ -42,24 +37,5 @@ export default function App() {
 const styles = StyleSheet.create({
   screen: {
     padding: 50
-  },
-  inputContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center"
-  },
-  input: {
-    borderColor: "gray",
-    borderWidth: 1,
-    padding: 10,
-    width: "80%"
-  },
-  listContainer: {
-    marginTop: 10
-  },
-  listItem: {
-    padding: 10,
-    backgroundColor: "#ccc",
-    marginVertical: 10
   }
 });
